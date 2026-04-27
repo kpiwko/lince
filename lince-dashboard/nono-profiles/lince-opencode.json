@@ -16,6 +16,8 @@
   },
   "environment": {
     "allow_vars": [
+      "HOME",
+      "PATH",
       "TERM",
       "COLORTERM",
       "TERM_PROGRAM",

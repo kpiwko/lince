@@ -1080,9 +1080,13 @@ def generate_nono_profile(
 
     # --- Environment passthrough ---
     env_conf = config.get("env", {})
-    passthrough = list(env_conf.get("passthrough", []))
-    if passthrough:
-        profile["environment"] = {"allow_vars": passthrough}
+    # HOME and PATH are always required: HOME for credential file discovery
+    # (google-auth-library, etc.), PATH for subprocess resolution.
+    _ALWAYS_PASS = ["HOME", "PATH"]
+    passthrough = _ALWAYS_PASS + [
+        v for v in env_conf.get("passthrough", []) if v not in _ALWAYS_PASS
+    ]
+    profile["environment"] = {"allow_vars": passthrough}
 
     # --- Extra env vars ---
     # Collect env vars from agent config, profile env, and [env.extra]
