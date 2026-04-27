@@ -27,15 +27,11 @@
     ]
   },
   "security": {
-    "allowed_commands": [
-      "git",
-      "python3",
-      "node",
-      "cargo",
-      "npm",
-      "go",
-      "make"
-    ],
     "signal_mode": "allow_same_sandbox"
+  },
+  "policy": {
+    "add_deny_access": [
+      "$XDG_CONFIG_HOME/nono/profiles"
+    ]
   }
 }

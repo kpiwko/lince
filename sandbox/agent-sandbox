@@ -1092,16 +1092,15 @@ def generate_nono_profile(
             profile["environment"]["allow_vars"].append(var)
 
     # --- Security ---
-    sec = config.get("security", {})
-    security: dict = {}
-    allowed_commands = ["git", "python3", "node", "cargo", "npm", "go", "make"]
-    if sec.get("block_git_push", True):
-        # Note: nono handles git push blocking via allowed_commands config
-        security["allowed_commands"] = allowed_commands
-    else:
-        security["allowed_commands"] = allowed_commands + ["git push"]
-    security["signal_mode"] = "allow_same_sandbox"
+    security: dict = {"signal_mode": "allow_same_sandbox"}
     profile["security"] = security
+
+    # --- Policy ---
+    # Prevent the agent from modifying its own nono sandbox profile.
+    # $XDG_CONFIG_HOME/nono/profiles is granted r+w by the claude-code base
+    # profile; we override it with an explicit deny here.
+    if agent_name == "claude":
+        profile["policy"] = {"add_deny_access": ["$XDG_CONFIG_HOME/nono/profiles"]}
 
     # --- Network ---
     # nono allows network by default; no profile section needed.
@@ -1886,7 +1885,8 @@ def cmd_run(args, agent_extra: list[str]) -> None:
         print(f"  project     {project_dir}")
         print(f"  isolation   Landlock LSM / Seatbelt")
         print(f"  network     enabled")
-        print(f"  git push    {'blocked' if sec.get('block_git_push', True) else 'allowed'}")
+        git_push_status = "soft-blocked (git config)" if sec.get("block_git_push", True) else "allowed"
+        print(f"  git push    {git_push_status}")
         print(
             f"  permissions "
             f"{'ask (safe mode)' if args.safe else 'per agent defaults'}"

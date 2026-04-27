@@ -29,15 +29,6 @@
     ]
   },
   "security": {
-    "allowed_commands": [
-      "git",
-      "python3",
-      "node",
-      "cargo",
-      "npm",
-      "go",
-      "make"
-    ],
     "signal_mode": "allow_same_sandbox"
   }
 }
