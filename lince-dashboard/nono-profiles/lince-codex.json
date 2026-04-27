@@ -1,6 +1,9 @@
 {
   "extends": "codex",
-  "description": "LINCE sandbox profile for OpenAI Codex",
+  "meta": {
+    "description": "LINCE sandbox profile for OpenAI Codex",
+    "name": "lince-codex"
+  },
   "filesystem": {
     "allow": [
       "$WORKDIR",
@@ -11,7 +14,7 @@
     ]
   },
   "environment": {
-    "passthrough": [
+    "allow_vars": [
       "TERM",
       "COLORTERM",
       "TERM_PROGRAM",

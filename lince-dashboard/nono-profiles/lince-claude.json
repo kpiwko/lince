@@ -1,6 +1,9 @@
 {
   "extends": "claude-code",
-  "description": "LINCE sandbox profile for Claude Code",
+  "meta": {
+    "description": "LINCE sandbox profile for Claude Code",
+    "name": "lince-claude"
+  },
   "filesystem": {
     "allow": [
       "$WORKDIR"
@@ -10,7 +13,7 @@
     ]
   },
   "environment": {
-    "passthrough": [
+    "allow_vars": [
       "TERM",
       "COLORTERM",
       "TERM_PROGRAM",

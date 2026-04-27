@@ -1,6 +1,9 @@
 {
   "extends": "opencode",
-  "description": "LINCE sandbox profile for OpenCode",
+  "meta": {
+    "description": "LINCE sandbox profile for OpenCode",
+    "name": "lince-opencode"
+  },
   "filesystem": {
     "allow": [
       "$WORKDIR",
@@ -12,7 +15,7 @@
     ]
   },
   "environment": {
-    "passthrough": [
+    "allow_vars": [
       "TERM",
       "COLORTERM",
       "TERM_PROGRAM",

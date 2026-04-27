@@ -1,6 +1,9 @@
 {
   "extends": "default",
-  "description": "LINCE sandbox profile for Google Gemini CLI",
+  "meta": {
+    "description": "LINCE sandbox profile for Google Gemini CLI",
+    "name": "lince-gemini"
+  },
   "filesystem": {
     "allow": [
       "$WORKDIR",
@@ -11,7 +14,7 @@
     ]
   },
   "environment": {
-    "passthrough": [
+    "allow_vars": [
       "TERM",
       "COLORTERM",
       "TERM_PROGRAM",
