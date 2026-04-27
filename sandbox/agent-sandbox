@@ -1053,6 +1053,31 @@ def generate_nono_profile(
     if filesystem:
         profile["filesystem"] = filesystem
 
+    # --- Policy: override deny-group blocks on explicitly granted paths ---
+    # deny_credentials blocks several home dirs (gcloud, aws, kube, etc.).
+    # A filesystem grant alone is not enough — override_deny is required to
+    # lift the deny-group rule, matching the pattern used for Library/Keychains
+    # in the claude-code base profile.
+    _DENY_CREDENTIALS_SUBDIRS = {
+        ".ssh", ".gnupg", ".aws", ".azure", ".config/gcloud",
+        ".gcloud", ".kube", ".docker", ".pki", ".terraform.d", ".config/op",
+    }
+    home = Path.home()
+    override_deny: list[str] = []
+    for granted in allow_paths + read_paths:
+        for sub in _DENY_CREDENTIALS_SUBDIRS:
+            blocked = str(home / sub)
+            if granted == blocked or granted.startswith(blocked + "/"):
+                if granted not in override_deny:
+                    override_deny.append(granted)
+    if override_deny:
+        policy = profile.setdefault("policy", {})
+        existing = policy.get("override_deny", [])
+        for p in override_deny:
+            if p not in existing:
+                existing.append(p)
+        policy["override_deny"] = existing
+
     # --- Environment passthrough ---
     env_conf = config.get("env", {})
     passthrough = list(env_conf.get("passthrough", []))
@@ -1100,7 +1125,8 @@ def generate_nono_profile(
     # $XDG_CONFIG_HOME/nono/profiles is granted r+w by the claude-code base
     # profile; we override it with an explicit deny here.
     if agent_name == "claude":
-        profile["policy"] = {"add_deny_access": ["$XDG_CONFIG_HOME/nono/profiles"]}
+        policy = profile.setdefault("policy", {})
+        policy.setdefault("add_deny_access", []).append("$XDG_CONFIG_HOME/nono/profiles")
 
     # --- Network ---
     # nono allows network by default; no profile section needed.
