@@ -1058,15 +1058,21 @@ def generate_nono_profile(
         if ep not in allow_paths:
             allow_paths.append(ep)
 
-    # --- Node.js (fnm): expose the active node installation read-only ----------
+    # --- Node.js (fnm): expose the active node installation executable ----------
     # npx-based MCP servers (e.g. context7) spawn as Claude Code children and
     # inherit the sandbox environment.  Two paths are needed:
     #   1. The resolved installation root (stable, version-pinned at nono-sync time)
+    #      Must be in allow_paths (not just read_paths) so node/npx are executable.
     #   2. ~/.local/state/fnm_multishells (session-ephemeral symlink layer that
     #      node traverses at runtime when resolving its own PATH entry)
     node_install = detect_node_install_dir()
-    if node_install and str(node_install) not in read_paths:
-        read_paths.append(str(node_install))
+    if node_install:
+        node_install_s = str(node_install)
+        if node_install_s not in allow_paths:
+            allow_paths.append(node_install_s)
+        # remove from read_paths if it was added there previously
+        if node_install_s in read_paths:
+            read_paths.remove(node_install_s)
         fnm_multishells = str(Path.home() / ".local" / "state" / "fnm_multishells")
         if fnm_multishells not in read_paths:
             read_paths.append(fnm_multishells)
@@ -2139,6 +2145,12 @@ def cmd_run(args, agent_extra: list[str]) -> None:
                 s = str(p)
                 if s not in bin_dirs:
                     bin_dirs.append(s)
+        # Include fnm node bin so npx-based MCP servers (e.g. context7) can start.
+        node_install = detect_node_install_dir()
+        if node_install:
+            node_bin = str(node_install / "bin")
+            if node_bin not in bin_dirs:
+                bin_dirs.append(node_bin)
         nono_env["PATH"] = ":".join(bin_dirs + ["/usr/local/bin", "/usr/bin", "/bin"])
         nono_env["NPM_CONFIG_CACHE"] = str(SANDBOX_DIR / "toolchains" / "npm-cache")
         nono_env["CLAUDE_CONFIG_DIR"] = str(SANDBOX_DIR / "claude-config")
