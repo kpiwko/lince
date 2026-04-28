@@ -14,6 +14,22 @@
       "$HOME/.config/opencode"
     ]
   },
+  "environment": {
+    "allow_vars": [
+      "HOME",
+      "PATH",
+      "TERM",
+      "COLORTERM",
+      "TERM_PROGRAM",
+      "LANG",
+      "LC_ALL",
+      "EDITOR",
+      "VISUAL",
+      "ZELLIJ",
+      "ZELLIJ_SESSION_NAME",
+      "LINCE_AGENT_ID"
+    ]
+  },
   "security": {
     "signal_mode": "allow_same_sandbox"
   }

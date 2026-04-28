@@ -13,6 +13,23 @@
       "$HOME/.local/lib"
     ]
   },
+  "environment": {
+    "allow_vars": [
+      "HOME",
+      "PATH",
+      "TERM",
+      "COLORTERM",
+      "TERM_PROGRAM",
+      "LANG",
+      "LC_ALL",
+      "EDITOR",
+      "VISUAL",
+      "ZELLIJ",
+      "ZELLIJ_SESSION_NAME",
+      "LINCE_AGENT_ID",
+      "GEMINI_API_KEY"
+    ]
+  },
   "security": {
     "signal_mode": "allow_same_sandbox"
   }
